@@ -76,13 +76,33 @@ log deve ser gerado.
 '''
 n_linhas = 8
 tamanho_da_linha = 32
-class MemoriaCache:
-    def __init__(self, n_linhas, tamanho_da_linha):
-        self.n_linhas = n_linhas
-        self.tamanho_da_linha = tamanho_da_linha
-        self.memoria: dict = {}
-        for i in range(n_linhas):
-            self.memoria[i] = [None] * tamanho_da_linha
 
-teste = MemoriaCache(n_linhas, tamanho_da_linha)
-print(teste.memoria)
+class MemoriaPrincipal:
+    def __init__(self):
+        # Usando um dicionário para simular a memória principal
+        # As chaves são endereços em hexadecimal (representados como strings)
+        self.dados = {}
+
+    def read(self, endereco: str) -> int:
+        """
+        Lê um valor na memória no endereço fornecido em hexadecimal.
+        """
+        endereco_em_int = int(endereco, 16)  # Converte o endereço hexadecimal para inteiro
+        if not (0 <= endereco_em_int < 2**32):
+            raise ValueError("Endereço fora do espaço de endereçamento de 32 bits.")
+        return self.data.get(endereco_em_int, 0)  # Retorna 0 se o endereço não tiver dado
+
+    def write(self, endereco: str, valor: int):
+        """
+        Escreve um valor na memória no endereço fornecido em hexadecimal.
+        """
+        endereco_em_int = int(endereco, 16)  # Converte o endereço hexadecimal para inteiro
+        if not (0 <= endereco_em_int < 2**32):
+            raise ValueError("Endereço fora do espaço de endereçamento de 32 bits.")
+        self.data[endereco] = valor  # Armazena o valor com a chave hexadecimal
+
+class LinhaCache:
+    def __init__(self):
+        self.tag = None
+        self.estado = 'I'
+        self.dados = None # Poderá ser removido no futuro (?)
