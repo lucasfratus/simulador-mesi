@@ -1,3 +1,6 @@
+import sys
+import argparse
+
 '''
 Deve-se implementar um simulador simplificado para o protocolo de coerência de cache MESI em
 processadores com memória compartilhada centralizada.
@@ -71,3 +74,15 @@ log deve ser gerado.
 • Caso a equipe prefira, ambos podem ser feitos simultaneamente.
 
 '''
+n_linhas = 8
+tamanho_da_linha = 32
+class MemoriaCache:
+    def __init__(self, n_linhas, tamanho_da_linha):
+        self.n_linhas = n_linhas
+        self.tamanho_da_linha = tamanho_da_linha
+        self.memoria: dict = {}
+        for i in range(n_linhas):
+            self.memoria[i] = [None] * tamanho_da_linha
+
+teste = MemoriaCache(n_linhas, tamanho_da_linha)
+print(teste.memoria)
