@@ -1,5 +1,4 @@
 import sys
-import argparse
 
 '''
 Deve-se implementar um simulador simplificado para o protocolo de coerência de cache MESI em
@@ -75,7 +74,7 @@ log deve ser gerado.
 
 '''
 n_linhas = 8
-tamanho_da_linha = 32
+tamanho_do_bloco = 32
 
 class MemoriaPrincipal:
     def __init__(self):
@@ -104,5 +103,27 @@ class MemoriaPrincipal:
 class LinhaCache:
     def __init__(self):
         self.tag = None
+        self.n_acessos = 0
         self.estado = 'I'
         self.dados = None # Poderá ser removido no futuro (?)
+
+
+class Cache:
+    def __init__(self):
+        self.linhas = []
+        for i in range(n_linhas):
+            self.linhas.append(LinhaCache())
+        self.tamanho_do_bloco = tamanho_do_bloco
+
+
+def le_instrucoes(arquivo) -> list:
+    with open(arquivo, 'r') as f:
+        instrucoes = f.readlines()
+    return instrucoes
+
+def carrega_memoria_principal(mem_principal: MemoriaPrincipal) -> int:
+    instrucoes = le_instrucoes(input('Digite o nome do arquivo de instruções: '))
+    for i, instrucao in enumerate(instrucoes):
+        instrucao = instrucao.strip()
+        mem_principal.write(?) # Nao sei como fazer isso ainda
+        # Processa a instrução
