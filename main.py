@@ -73,6 +73,8 @@ log deve ser gerado.
 • Caso a equipe prefira, ambos podem ser feitos simultaneamente.
 
 '''
+### AREA DE CONFIGURAÇÃO DO SIMULADOR ###
+# Será um arquivo de configuração
 n_linhas = 8
 tamanho_do_bloco = 32
 
