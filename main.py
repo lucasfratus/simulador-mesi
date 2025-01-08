@@ -93,14 +93,14 @@ class MemoriaPrincipal:
             raise ValueError("Endereço fora do espaço de endereçamento de 32 bits.")
         return self.data.get(endereco_em_int, 0)  # Retorna 0 se o endereço não tiver dado
 
-    def write(self, endereco: str, valor: int):
+    def write(self, endereco: str):
         """
         Escreve um valor na memória no endereço fornecido em hexadecimal.
         """
         endereco_em_int = int(endereco, 16)  # Converte o endereço hexadecimal para inteiro
         if not (0 <= endereco_em_int < 2**32):
             raise ValueError("Endereço fora do espaço de endereçamento de 32 bits.")
-        self.data[endereco] = valor  # Armazena o valor com a chave hexadecimal
+        self.data[endereco] = endereco  # Armazena o valor com a chave hexadecimal
 
 class LinhaCache:
     def __init__(self):
@@ -118,14 +118,36 @@ class Cache:
         self.tamanho_do_bloco = tamanho_do_bloco
 
 
+def leitura_arquivo_configuracao():
+    '''
+    Realiza a leitura do arquivo de configuração.
+    É necessário que o arquivo de configuração esteja no mesmo diretório do arquivo principal.
+    O nome do arquivo deve ser "settings.ini"
+    '''
+    arq_configuracao = open('settings.ini', 'r')
+    linhas = arq_configuracao.readlines()
+
+    global NUMERO_PROCESSADORES
+    NUMERO_PROCESSADORES = int(linhas[0].split('=')[1])
+
+    global TAMANHO_LINHA
+    TAMANHO_LINHA = int(linhas[1].split('=')[1])
+
+    global NUMERO_LINHAS_CACHE
+    NUMERO_LINHAS_CACHE = int(linhas[2].split('=')[1])
+
+
 def le_instrucoes(arquivo) -> list:
     with open(arquivo, 'r') as f:
         instrucoes = f.readlines()
     return instrucoes
 
 def carrega_memoria_principal(mem_principal: MemoriaPrincipal) -> int:
-    instrucoes = le_instrucoes(input('Digite o nome do arquivo de instruções: '))
-    for i, instrucao in enumerate(instrucoes):
-        instrucao = instrucao.strip()
-        mem_principal.write(?) # Nao sei como fazer isso ainda
+    nome_arq = le_instrucoes(input('Digite o nome do arquivo de instruções: '))
+    arq_entrada = open(nome_arq,'r')
+    instrucoes = arq_entrada.readlines()
+    for i in instrucoes:
+        instrucao = i.strip().split(' ')
+        mem_principal.write(instrucao[0],instrucao[1]) # Nao sei como fazer isso ainda
         # Processa a instrução
+
