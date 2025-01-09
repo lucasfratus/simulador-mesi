@@ -75,47 +75,41 @@ log deve ser gerado.
 '''
 ### AREA DE CONFIGURAÇÃO DO SIMULADOR ###
 # Será um arquivo de configuração
-n_linhas = 8
-tamanho_do_bloco = 32
+
+
 
 class MemoriaPrincipal:
-    def __init__(self):
-        # Usando um dicionário para simular a memória principal
-        # As chaves são endereços em hexadecimal (representados como strings)
+    def __init__(self, tamanho_do_bloco, n_bits_por_linha):
         self.dados = {}
+        self.tamanho_do_bloco = tamanho_do_bloco
+        self.n_bits_por_linha = n_bits_por_linha
+        self.tamanho_da_memoria = 2**32
 
-    def read(self, endereco: str) -> int:
-        """
-        Lê um valor na memória no endereço fornecido em hexadecimal.
-        """
-        endereco_em_int = int(endereco, 16)  # Converte o endereço hexadecimal para inteiro
-        if not (0 <= endereco_em_int < 2**32):
-            raise ValueError("Endereço fora do espaço de endereçamento de 32 bits.")
-        return self.data.get(endereco_em_int, 0)  # Retorna 0 se o endereço não tiver dado
+        dado = 0
+        while dado < tamanho_do_bloco:
+            self.dados[dado] = bin(dado)[2:].zfill(n_bits_por_linha)
+            dado = dado + 1
 
-    def write(self, endereco: str):
-        """
-        Escreve um valor na memória no endereço fornecido em hexadecimal.
-        """
-        endereco_em_int = int(endereco, 16)  # Converte o endereço hexadecimal para inteiro
-        if not (0 <= endereco_em_int < 2**32):
-            raise ValueError("Endereço fora do espaço de endereçamento de 32 bits.")
-        self.data[endereco] = endereco  # Armazena o valor com a chave hexadecimal
 
 class LinhaCache:
     def __init__(self):
         self.tag = None
-        self.n_acessos = 0
+        self.data = None
         self.estado = 'I'
-        self.dados = None # Poderá ser removido no futuro (?)
 
 
-class Cache:
-    def __init__(self):
-        self.linhas = []
+class CacheDados:
+    def __init__(self, tamanho_da_linha, n_linhas):
+        self.linhas: dict = {}
+        self.tamanho_da_linha = tamanho_da_linha
         for i in range(n_linhas):
-            self.linhas.append(LinhaCache())
-        self.tamanho_do_bloco = tamanho_do_bloco
+            self.linhas[i] = LinhaCache()
+
+
+def le_instrucoes(arquivo) -> list:
+    with open(arquivo, 'r') as f:
+        instrucoes = f.readlines()
+    return instrucoes
 
 
 def leitura_arquivo_configuracao():
@@ -136,12 +130,6 @@ def leitura_arquivo_configuracao():
     global NUMERO_LINHAS_CACHE
     NUMERO_LINHAS_CACHE = int(linhas[2].split('=')[1])
 
-
-def le_instrucoes(arquivo) -> list:
-    with open(arquivo, 'r') as f:
-        instrucoes = f.readlines()
-    return instrucoes
-
 def carrega_memoria_principal(mem_principal: MemoriaPrincipal) -> int:
     nome_arq = le_instrucoes(input('Digite o nome do arquivo de instruções: '))
     arq_entrada = open(nome_arq,'r')
@@ -151,3 +139,4 @@ def carrega_memoria_principal(mem_principal: MemoriaPrincipal) -> int:
         mem_principal.write(instrucao[0],instrucao[1]) # Nao sei como fazer isso ainda
         # Processa a instrução
 
+print(MemoriaPrincipal(4,32).dados)
