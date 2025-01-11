@@ -158,6 +158,8 @@ def leitura_arquivo_configuracao():
 
     if POLITICA_SUBSTITUICAO not in ['LFU', 'FIFO']:
         raise ValueError('A política de substituição deve ser LFU ou FIFO.')
+    
+    arq_configuracao.close()
 
 
 def main():
