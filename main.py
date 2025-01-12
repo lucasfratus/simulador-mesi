@@ -196,7 +196,7 @@ def FIFO(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dado
         match operacao:
             case 0:
                 # Leitura de instrucoes
-                
+
                 #busca na cache privada
                 hit = False
                 conjunto_privada = int(endereco, 16) % (NUMERO_LINHAS_CACHE_PRIVADA // NUMERO_LINHAS_CONJUNTO)
@@ -250,7 +250,57 @@ def FIFO(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dado
 
             case 2:
                 # Leitura de dados
-                pass
+
+                # TODO: Implementar a leitura de dados
+                hit = False
+
+                # Busca na cache privada
+                conjunto_privada = int(endereco, 16) % (NUMERO_LINHAS_CACHE_PRIVADA // NUMERO_LINHAS_CONJUNTO)
+
+                for linha in cache_privada_dados[processador].conjuntos[conjunto_privada]:
+                    if endereco in linha.bloco and linha.estado != 'I':
+                        print('Hit na cache privada de dados')
+                        hit = True
+                        break
+
+                if not hit:
+                    print('Miss na cache privada de dados')
+
+                    # Busca na cache compartilhada
+                    conjunto_compartilhada = int(endereco, 16) % (NUMERO_LINHAS_CACHE_COMPARTILHADA // NUMERO_LINHAS_CONJUNTO)
+
+                    # Verifica se o bloco está na cache compartilhada
+                    for linha in cache_compartilhada_dados.conjuntos[conjunto_compartilhada]:
+                        if endereco in linha.bloco and linha.estado != 'I':
+                            print('Hit na cache compartilhada de dados')
+                            hit = True
+                            for i in range(NUMERO_PROCESSADORES):
+                                for linha_privada in cache_privada_dados[i].conjuntos[conjunto_privada]:
+                                    if linha_privada.estado == 'M' or linha_privada.estado == 'E': # TODO: VERIFICAR SE ESTÁ CERTO
+                                        linha_privada.estado = 'S'
+
+                            # Atualiza a cache privada
+                            inserido = False
+                            for linha_p in cache_privada_dados[processador].conjuntos[conjunto_privada]:
+                                linha_p.contador += 1
+                                if linha_p.estado == 'I':
+                                    linha_p.bloco = linha.bloco
+                                    linha_p.estado = 'S'
+                                    linha_p.contador = 0
+                                    inserido = True
+                                    
+
+                            if not inserido:
+                                maior = -1
+                                linha_substituida = None
+                                for linha_p in cache_privada_dados[processador].conjuntos[conjunto_privada]:
+                                    if linha_p.contador > maior:
+                                        maior = linha_p.contador
+                                        linha_substituida = linha_p
+                                linha_substituida.bloco = linha.bloco
+                                linha_substituida.estado = 'S'
+                                linha_substituida.contador = 0    
+                            break
             case 3:
                 # Escrita de dados
                 pass
