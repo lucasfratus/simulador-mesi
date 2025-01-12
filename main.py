@@ -1,4 +1,5 @@
 import sys
+import config
 
 '''
 Deve-se implementar um simulador simplificado para o protocolo de coerência de cache MESI em
@@ -110,10 +111,12 @@ class Cache:
             retorno += '\n'
         return retorno
 
+
 def le_instrucoes(arquivo) -> list:
     with open(arquivo, 'r') as f:
         instrucoes = f.readlines()
     return instrucoes
+
 
 def separa_instrucao(instrucao: str) -> tuple:
     instrucao = instrucao.split()
@@ -126,26 +129,31 @@ def leitura_arquivo_configuracao():
     É necessário que o arquivo de configuração esteja no mesmo diretório do arquivo principal.
     O nome do arquivo deve ser "settings.ini"
     '''
-    arq_configuracao = open('settings.ini', 'r')
-    linhas = arq_configuracao.readlines()
+    #arq_configuracao = open('settings.ini', 'r')
+    #linhas = arq_configuracao.readlines()
 
     global NUMERO_PROCESSADORES
-    NUMERO_PROCESSADORES = int(linhas[0].split('=')[1])
+    #NUMERO_PROCESSADORES = int(linhas[0].split('=')[1])
+    NUMERO_PROCESSADORES = config.CONFIGURACOES['n_processadores']
 
     global TAMANHO_LINHA    #  == tamanho do bloco
-    TAMANHO_LINHA = int(linhas[1].split('=')[1])
+    #TAMANHO_LINHA = int(linhas[1].split('=')[1])
+    TAMANHO_LINHA = config.CONFIGURACOES['tamanho_linha']
 
     global NUMERO_LINHAS_CACHE_COMPARTILHADA
-    NUMERO_LINHAS_CACHE_COMPARTILHADA = int(linhas[2].split('=')[1])
+    #NUMERO_LINHAS_CACHE_COMPARTILHADA = int(linhas[2].split('=')[1])
+    NUMERO_LINHAS_CACHE_COMPARTILHADA = config.CONFIGURACOES['n_linhas_cache_compartilhada']
 
     global NUMERO_LINHAS_CACHE_PRIVADA
-    NUMERO_LINHAS_CACHE_PRIVADA = int(linhas[3].split('=')[1])
+    #NUMERO_LINHAS_CACHE_PRIVADA = int(linhas[3].split('=')[1])
+    NUMERO_LINHAS_CACHE_PRIVADA = config.CONFIGURACOES['n_linhas_cache_privada']
 
     if NUMERO_LINHAS_CACHE_PRIVADA >= NUMERO_LINHAS_CACHE_COMPARTILHADA:
         raise ValueError('O número de linhas da cache privada deve ser menor que o número de linhas da cache compartilhada.')
 
     global NUMERO_LINHAS_CONJUNTO
-    NUMERO_LINHAS_CONJUNTO = int(linhas[4].split('=')[1])
+    #NUMERO_LINHAS_CONJUNTO = int(linhas[4].split('=')[1])
+    NUMERO_LINHAS_CONJUNTO = config.CONFIGURACOES['n_linhas_conjunto']
 
     if NUMERO_LINHAS_CACHE_PRIVADA % NUMERO_LINHAS_CONJUNTO != 0:
         raise ValueError('O número de linhas da cache privada deve ser múltiplo do número de linhas por conjunto.')
@@ -154,12 +162,11 @@ def leitura_arquivo_configuracao():
         raise ValueError('O número de linhas da cache compartilhada deve ser múltiplo do número de linhas por conjunto.')
     
     global POLITICA_SUBSTITUICAO
-    POLITICA_SUBSTITUICAO = str(linhas[5].split('=')[1]).strip()
+    #POLITICA_SUBSTITUICAO = linhas[5].split('=')[1].strip()
+    POLITICA_SUBSTITUICAO = config.CONFIGURACOES['politica_substituicao']
 
     if POLITICA_SUBSTITUICAO not in ['LFU', 'FIFO']:
         raise ValueError('A política de substituição deve ser LFU ou FIFO.')
-    
-    arq_configuracao.close()
 
 
 def main():
