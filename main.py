@@ -220,6 +220,7 @@ def FIFO(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dado
                         if endereco in linha.bloco and linha.estado != 'I':
                             print('Hit na cache compartilhada de instrucoes')
                             hit = True
+                            # Atualiza o estado das linhas da cache privada
                             for i in range(NUMERO_PROCESSADORES):
                                 for linha_privada in cache_privada_instrucoes[i].conjuntos[conjunto_privada]:
                                     if linha_privada.estado == 'M' or linha_privada.estado == 'E':
