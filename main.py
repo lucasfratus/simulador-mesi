@@ -173,7 +173,7 @@ def leitura_arquivo_configuracao():
     global NUMERO_LINHAS_CACHE_PRIVADA
     NUMERO_LINHAS_CACHE_PRIVADA = config.CONFIGURACOES['n_linhas_cache_privada']
 
-    if NUMERO_LINHAS_CACHE_PRIVADA * NUMERO_PROCESSADORES >= NUMERO_LINHAS_CACHE_COMPARTILHADA:
+    if NUMERO_LINHAS_CACHE_PRIVADA * NUMERO_PROCESSADORES > NUMERO_LINHAS_CACHE_COMPARTILHADA:
         raise ValueError('O número de linhas da cache privada deve ser menor que o número somado de linhas de todas as caches compartilhadas.')
 
     global NUMERO_LINHAS_CONJUNTO

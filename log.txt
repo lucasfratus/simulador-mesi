@@ -127,245 +127,7 @@ Bloco: []
 
 
 
-Processador: 1 - Operacao: 2 - Endereco: 0xa8590400
-Read Miss na cache privada de dados
-
-Buscando na cache compartilhada de dados
-
-Read Hit na cache compartilhada de dados
-
-Cache privada de dados:
-
-Processador 0:
-
-Conjunto 0:
-Est: S - Bloco: ['0xa8590400', '0xa8590401']
-Est: I - Bloco: []
-
-Conjunto 1:
-Est: I - Bloco: []
-Est: I - Bloco: []
-
-Processador 1:
-
-Conjunto 0:
-Est: S - Bloco: ['0xa8590400', '0xa8590401']
-Est: I - Bloco: []
-
-Conjunto 1:
-Est: I - Bloco: []
-Est: I - Bloco: []
-
-Cache privada de instrucoes:
-
-Processador 0:
-
-Conjunto 0:
-Est: I - Bloco: []
-Est: I - Bloco: []
-
-Conjunto 1:
-Est: I - Bloco: []
-Est: I - Bloco: []
-
-Processador 1:
-
-Conjunto 0:
-Est: I - Bloco: []
-Est: I - Bloco: []
-
-Conjunto 1:
-Est: I - Bloco: []
-Est: I - Bloco: []
-
-Cache compartilhada de dados:
-
-Conjunto 0:
-Bloco: ['0xa8590400', '0xa8590401']
-Bloco: []
-
-Conjunto 1:
-Bloco: []
-Bloco: []
-
-Conjunto 2:
-Bloco: []
-Bloco: []
-
-Conjunto 3:
-Bloco: []
-Bloco: []
-
-Conjunto 4:
-Bloco: []
-Bloco: []
-
-Conjunto 5:
-Bloco: []
-Bloco: []
-
-Conjunto 6:
-Bloco: []
-Bloco: []
-
-Conjunto 7:
-Bloco: []
-Bloco: []
-
-Cache compartilhada de instrucoes:
-
-Conjunto 0:
-Bloco: []
-Bloco: []
-
-Conjunto 1:
-Bloco: []
-Bloco: []
-
-Conjunto 2:
-Bloco: []
-Bloco: []
-
-Conjunto 3:
-Bloco: []
-Bloco: []
-
-Conjunto 4:
-Bloco: []
-Bloco: []
-
-Conjunto 5:
-Bloco: []
-Bloco: []
-
-Conjunto 6:
-Bloco: []
-Bloco: []
-
-Conjunto 7:
-Bloco: []
-Bloco: []
-
-
-
-Processador: 0 - Operacao: 3 - Endereco: 0xa8590401
-Write Hit na cache privada de dados
-
-Cache privada de dados:
-
-Processador 0:
-
-Conjunto 0:
-Est: M - Bloco: ['0xa8590400', '0xa8590401']
-Est: I - Bloco: []
-
-Conjunto 1:
-Est: I - Bloco: []
-Est: I - Bloco: []
-
-Processador 1:
-
-Conjunto 0:
-Est: I - Bloco: ['0xa8590400', '0xa8590401']
-Est: I - Bloco: []
-
-Conjunto 1:
-Est: I - Bloco: []
-Est: I - Bloco: []
-
-Cache privada de instrucoes:
-
-Processador 0:
-
-Conjunto 0:
-Est: I - Bloco: []
-Est: I - Bloco: []
-
-Conjunto 1:
-Est: I - Bloco: []
-Est: I - Bloco: []
-
-Processador 1:
-
-Conjunto 0:
-Est: I - Bloco: []
-Est: I - Bloco: []
-
-Conjunto 1:
-Est: I - Bloco: []
-Est: I - Bloco: []
-
-Cache compartilhada de dados:
-
-Conjunto 0:
-Bloco: ['0xa8590400', '0xa8590401']
-Bloco: []
-
-Conjunto 1:
-Bloco: []
-Bloco: []
-
-Conjunto 2:
-Bloco: []
-Bloco: []
-
-Conjunto 3:
-Bloco: []
-Bloco: []
-
-Conjunto 4:
-Bloco: []
-Bloco: []
-
-Conjunto 5:
-Bloco: []
-Bloco: []
-
-Conjunto 6:
-Bloco: []
-Bloco: []
-
-Conjunto 7:
-Bloco: []
-Bloco: []
-
-Cache compartilhada de instrucoes:
-
-Conjunto 0:
-Bloco: []
-Bloco: []
-
-Conjunto 1:
-Bloco: []
-Bloco: []
-
-Conjunto 2:
-Bloco: []
-Bloco: []
-
-Conjunto 3:
-Bloco: []
-Bloco: []
-
-Conjunto 4:
-Bloco: []
-Bloco: []
-
-Conjunto 5:
-Bloco: []
-Bloco: []
-
-Conjunto 6:
-Bloco: []
-Bloco: []
-
-Conjunto 7:
-Bloco: []
-Bloco: []
-
-
-
-Processador: 1 - Operacao: 2 - Endereco: 0xa8590404
+Processador: 0 - Operacao: 2 - Endereco: 0xa8590405
 Read Miss na cache privada de dados
 
 Buscando na cache compartilhada de dados
@@ -379,17 +141,17 @@ Cache privada de dados:
 Processador 0:
 
 Conjunto 0:
-Est: M - Bloco: ['0xa8590400', '0xa8590401']
-Est: I - Bloco: []
-
-Conjunto 1:
-Est: I - Bloco: []
-Est: I - Bloco: []
-
-Processador 1:
-
-Conjunto 0:
+Est: E - Bloco: ['0xa8590400', '0xa8590401']
 Est: E - Bloco: ['0xa8590404', '0xa8590405']
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Processador 1:
+
+Conjunto 0:
+Est: I - Bloco: []
 Est: I - Bloco: []
 
 Conjunto 1:
@@ -488,29 +250,31 @@ Bloco: []
 
 
 
-Processador: 0 - Operacao: 3 - Endereco: 0xa8590404
-Write Miss na cache privada de dados
+Processador: 0 - Operacao: 2 - Endereco: 0xa8590402
+Read Miss na cache privada de dados
 
 Buscando na cache compartilhada de dados
 
-Hit na cache compartilhada de dados
+Read Miss na cache compartilhada de dados
+
+Buscando na memoria principal
 
 Cache privada de dados:
 
 Processador 0:
 
 Conjunto 0:
-Est: M - Bloco: ['0xa8590400', '0xa8590401']
-Est: M - Bloco: ['0xa8590404', '0xa8590405']
+Est: E - Bloco: ['0xa8590400', '0xa8590401']
+Est: E - Bloco: ['0xa8590404', '0xa8590405']
 
 Conjunto 1:
-Est: I - Bloco: []
+Est: E - Bloco: ['0xa8590402', '0xa8590403']
 Est: I - Bloco: []
 
 Processador 1:
 
 Conjunto 0:
-Est: I - Bloco: ['0xa8590404', '0xa8590405']
+Est: I - Bloco: []
 Est: I - Bloco: []
 
 Conjunto 1:
@@ -546,7 +310,7 @@ Bloco: ['0xa8590400', '0xa8590401']
 Bloco: []
 
 Conjunto 1:
-Bloco: []
+Bloco: ['0xa8590402', '0xa8590403']
 Bloco: []
 
 Conjunto 2:
@@ -609,29 +373,31 @@ Bloco: []
 
 
 
-Processador: 1 - Operacao: 3 - Endereco: 0xa8590404
-Write Miss na cache privada de dados
+Processador: 0 - Operacao: 2 - Endereco: 0xa8590406
+Read Miss na cache privada de dados
 
 Buscando na cache compartilhada de dados
 
-Hit na cache compartilhada de dados
+Read Miss na cache compartilhada de dados
+
+Buscando na memoria principal
 
 Cache privada de dados:
 
 Processador 0:
 
 Conjunto 0:
-Est: M - Bloco: ['0xa8590400', '0xa8590401']
-Est: I - Bloco: ['0xa8590404', '0xa8590405']
+Est: E - Bloco: ['0xa8590400', '0xa8590401']
+Est: E - Bloco: ['0xa8590404', '0xa8590405']
 
 Conjunto 1:
-Est: I - Bloco: []
-Est: I - Bloco: []
+Est: E - Bloco: ['0xa8590402', '0xa8590403']
+Est: E - Bloco: ['0xa8590406', '0xa8590407']
 
 Processador 1:
 
 Conjunto 0:
-Est: M - Bloco: ['0xa8590404', '0xa8590405']
+Est: I - Bloco: []
 Est: I - Bloco: []
 
 Conjunto 1:
@@ -667,7 +433,7 @@ Bloco: ['0xa8590400', '0xa8590401']
 Bloco: []
 
 Conjunto 1:
-Bloco: []
+Bloco: ['0xa8590402', '0xa8590403']
 Bloco: []
 
 Conjunto 2:
@@ -675,7 +441,7 @@ Bloco: ['0xa8590404', '0xa8590405']
 Bloco: []
 
 Conjunto 3:
-Bloco: []
+Bloco: ['0xa8590406', '0xa8590407']
 Bloco: []
 
 Conjunto 4:
