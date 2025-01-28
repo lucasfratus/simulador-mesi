@@ -5,5 +5,5 @@ CONFIGURACOES = {
     "n_linhas_cache_compartilhada": 16,
     "n_linhas_cache_privada": 4,
     "n_linhas_conjunto": 2,
-    "politica_substituicao": 'LFU'
+    "politica_substituicao": 'FIFO'
 }

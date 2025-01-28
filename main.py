@@ -1,4 +1,5 @@
 import config
+import sys
 
 '''
 Deve-se implementar um simulador simplificado para o protocolo de coerência de cache MESI em
@@ -81,15 +82,14 @@ class LinhaCache:
 
     def __str__(self):
         return f'Est: {self.estado} - Bloco: {self.bloco}'
-    
-    def invalidate(self):
+
+class LinhaCacheCompartilhada:
+    def __init__(self):
         self.bloco = []
-        self.estado = 'I'
+        self.contador = -1
 
-    def write(self, bloco):
-        self.bloco = bloco
-        self.estado = 'M'
-
+    def __str__(self):
+        return f'Bloco: {self.bloco}'
 
 class Cache:
     def __init__(self, n_linhas, n_linhas_por_conjunto):
@@ -97,6 +97,21 @@ class Cache:
         for i in range(n_linhas//n_linhas_por_conjunto):
             self.conjuntos[i] = [LinhaCache() for j in range(n_linhas_por_conjunto)]
 
+    def __str__(self):
+        retorno = ''
+        for conjunto in self.conjuntos:
+            retorno += f'Conjunto {conjunto}:\n'
+            for linha in self.conjuntos[conjunto]:
+                retorno += f'{linha}\n'
+            retorno += '\n'
+        return retorno
+
+class CacheCompartilhada:
+    def __init__(self, n_linhas, n_linhas_por_conjunto):
+        self.conjuntos = {}
+        for i in range(n_linhas//n_linhas_por_conjunto):
+            self.conjuntos[i] = [LinhaCacheCompartilhada() for j in range(n_linhas_por_conjunto)]
+    
     def __str__(self):
         retorno = ''
         for conjunto in self.conjuntos:
@@ -138,7 +153,7 @@ def imprimir_caches(cache_privada_dados, cache_privada_instrucoes, cache_compart
 
 def separa_instrucao(instrucao: str) -> tuple:
     instrucao = instrucao.split()
-    return (int(instrucao[0]), int(instrucao[1]), str(instrucao[2]))
+    return (int(instrucao[0]), int(instrucao[1]), '0x' + str(instrucao[2]))
 
 
 def leitura_arquivo_configuracao():
@@ -180,7 +195,7 @@ def leitura_arquivo_configuracao():
         raise ValueError('A política de substituição deve ser LFU ou FIFO.')
 
 
-def main():
+def main(nome_arq_instrucoes: str):
     arq_log = open('log.txt', 'w')
     leitura_arquivo_configuracao()
     print(f'Numero de processadores: {NUMERO_PROCESSADORES}')
@@ -195,8 +210,8 @@ def main():
     arq_log.write(f'Numero de linhas por conjunto: {NUMERO_LINHAS_CONJUNTO}\n')
     print(f'Politica de substituição: {POLITICA_SUBSTITUICAO}')
 
-    cache_compartilhada_dados = Cache(NUMERO_LINHAS_CACHE_COMPARTILHADA, NUMERO_LINHAS_CONJUNTO)
-    cache_compartilhada_instrucoes = Cache(NUMERO_LINHAS_CACHE_COMPARTILHADA, NUMERO_LINHAS_CONJUNTO) 
+    cache_compartilhada_dados = CacheCompartilhada(NUMERO_LINHAS_CACHE_COMPARTILHADA, NUMERO_LINHAS_CONJUNTO)
+    cache_compartilhada_instrucoes = CacheCompartilhada(NUMERO_LINHAS_CACHE_COMPARTILHADA, NUMERO_LINHAS_CONJUNTO) 
 
     cache_privada_dados = []
     cache_privada_instrucoes = []
@@ -205,7 +220,7 @@ def main():
         cache_privada_instrucoes.append(Cache(NUMERO_LINHAS_CACHE_PRIVADA, NUMERO_LINHAS_CONJUNTO))
 
 
-    arq_instrucoes = open('instrucoes.txt', 'r')
+    arq_instrucoes = open(nome_arq_instrucoes, 'r')
 
     if POLITICA_SUBSTITUICAO == 'LFU':
         LFU(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dados, cache_compartilhada_instrucoes, arq_instrucoes, arq_log)
@@ -215,7 +230,7 @@ def main():
     arq_instrucoes.close()
     
 
-def FIFO(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dados, cache_compartilhada_instrucoes, arq_instrucoes, arq_log):
+def FIFO(cache_privada_dados: list[Cache], cache_privada_instrucoes: list[Cache], cache_compartilhada_dados: CacheCompartilhada, cache_compartilhada_instrucoes: CacheCompartilhada, arq_instrucoes, arq_log):
     instrucao_atual = arq_instrucoes.readline()
     print(instrucao_atual)
     arq_log.write(instrucao_atual)
@@ -225,20 +240,25 @@ def FIFO(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dado
             raise ValueError('O id do processador não pode ser maior que o número de processadores.')
         elif operacao not in [0, 2, 3]:
             raise ValueError('O tipo de operação deve ser 0, 2 ou 3.')
-        elif len(endereco) != 8:
+        elif len(endereco) != 10: # 0x + 8 caracteres
             raise ValueError('O endereço deve ter 8 caracteres (4 bytes).')
         
         print(f'Processador: {processador} - Operacao: {operacao} - Endereco: {endereco}')
         arq_log.write(f'Processador: {processador} - Operacao: {operacao} - Endereco: {endereco}\n')
 
+        #   bloco = endereco // N_LINHAS_BLOCO (tamanho da linha)
+        #   conjunto = bloco % N_CONJUNTOS
+        bloco = int(endereco, 16) // TAMANHO_LINHA
+        conjunto_privada = bloco % (NUMERO_LINHAS_CACHE_PRIVADA // NUMERO_LINHAS_CONJUNTO)
+        conjunto_compartilhada = bloco % (NUMERO_LINHAS_CACHE_COMPARTILHADA // NUMERO_LINHAS_CONJUNTO)
+
         match operacao:
             case 0:
                 # Leitura de instrucoes
                 hit = False
-                conjunto_privada = int(endereco, 16) % (NUMERO_LINHAS_CACHE_PRIVADA // NUMERO_LINHAS_CONJUNTO)
                 # Verifica se há um hit na cache privada de instruções
-                for linha in cache_privada_instrucoes[processador].conjuntos[conjunto_privada]: # tentar encontrar o bloco em seu respectivo conjunto
-                    if endereco in linha.bloco and linha.estado != 'I':
+                for linha_pvt in cache_privada_instrucoes[processador].conjuntos[conjunto_privada]: # tentar encontrar o bloco em seu respectivo conjunto
+                    if endereco in linha_pvt.bloco and linha_pvt.estado != 'I':
                         print('Read Hit na cache privada de instrucoes')
                         arq_log.write('Read Hit na cache privada de instrucoes\n\n')
                         hit = True
@@ -248,13 +268,12 @@ def FIFO(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dado
                     arq_log.write('Miss na cache privada de instrucoes\n\n')
                     print('Buscando na cache compartilhada de instrucoes')
                     arq_log.write('Buscando na cache compartilhada de instrucoes\n\n')
-                    conjunto_compartilhada = int(endereco, 16) % (NUMERO_LINHAS_CACHE_COMPARTILHADA // NUMERO_LINHAS_CONJUNTO)
                     # Verifica se há um hit na cache compartilhada de instruções
-                    for linha in cache_compartilhada_instrucoes.conjuntos[conjunto_compartilhada]:
-                        if endereco in linha.bloco and linha.estado != 'I':
+                    for linha_sh in cache_compartilhada_instrucoes.conjuntos[conjunto_compartilhada]:
+                        if endereco in linha_sh.bloco:
                             print('Hit na cache compartilhada de instrucoes')
+                            arq_log.write('Hit na cache compartilhada de instrucoes\n\n')
                             hit = True
-                            linha.estado = 'S'
                             # Atualiza o estado das linhas na cache privada de todos os processadores
                             for i in range(NUMERO_PROCESSADORES):
                                 for linha_privada in cache_privada_instrucoes[i].conjuntos[conjunto_privada]:
@@ -265,13 +284,13 @@ def FIFO(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dado
                             for linha_p in cache_privada_instrucoes[processador].conjuntos[conjunto_privada]:
                                 linha_p.contador += 1
                                 if linha_p.estado == 'I' and inserido == False:
-                                    linha_p.bloco = linha.bloco
+                                    linha_p.bloco = linha_sh.bloco
                                     linha_p.estado = 'S'
                                     linha_p.contador = 0
                                     inserido = True
                             if not inserido:
                                 maior = max(cache_privada_instrucoes[processador].conjuntos[conjunto_privada], key=lambda l: l.contador)
-                                maior.bloco = linha.bloco
+                                maior.bloco = linha_sh.bloco
                                 maior.estado = 'S'
                                 maior.contador = 0
                             break
@@ -285,15 +304,13 @@ def FIFO(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dado
                         inserido = False
                         for linha_c in cache_compartilhada_instrucoes.conjuntos[conjunto_compartilhada]:
                             linha_c.contador += 1
-                            if linha_c.estado == 'I' and inserido == False:
+                            if inserido == False and linha_c.bloco == []:
                                 linha_c.bloco = bloco_memoria_principal
-                                linha_c.estado = 'E'
                                 linha_c.contador = 0
                                 inserido = True
                         if not inserido:
                             maior = max(cache_compartilhada_instrucoes.conjuntos[conjunto_compartilhada], key=lambda l: l.contador)
                             maior.bloco = bloco_memoria_principal
-                            maior.estado = 'E'
                             maior.contador = 0
                         # Insere o bloco na cache privada do processador atual
                         inserido = False
@@ -313,7 +330,6 @@ def FIFO(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dado
             case 2:
                 # Leitura de dados
                 hit = False
-                conjunto_privada = int(endereco, 16) % (NUMERO_LINHAS_CACHE_PRIVADA // NUMERO_LINHAS_CONJUNTO)
                 # Verifica se há um hit na cache privada de dados
                 for linha in cache_privada_dados[processador].conjuntos[conjunto_privada]:
                     if endereco in linha.bloco and linha.estado != 'I':
@@ -326,14 +342,12 @@ def FIFO(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dado
                     arq_log.write('Read Miss na cache privada de dados\n\n')
                     print('Buscando na cache compartilhada de dados\n\n')
                     arq_log.write('Buscando na cache compartilhada de dados\n\n')
-                    conjunto_compartilhada = int(endereco, 16) % (NUMERO_LINHAS_CACHE_COMPARTILHADA // NUMERO_LINHAS_CONJUNTO)
                     # Verifica se há um hit na cache compartilhada de dados
                     for linha in cache_compartilhada_dados.conjuntos[conjunto_compartilhada]:
-                        if endereco in linha.bloco and linha.estado != 'I':
+                        if endereco in linha.bloco:
                             print('Read Hit na cache compartilhada de dados')
                             arq_log.write('Read Hit na cache compartilhada de dados\n\n')
                             hit = True
-                            linha.estado = 'S'
                             # Atualiza o estado das linhas na cache privada de todos os processadores
                             for i in range(NUMERO_PROCESSADORES):
                                 for linha_privada in cache_privada_dados[i].conjuntos[conjunto_privada]:
@@ -364,15 +378,13 @@ def FIFO(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dado
                         inserido = False
                         for linha_c in cache_compartilhada_dados.conjuntos[conjunto_compartilhada]:
                             linha_c.contador += 1
-                            if linha_c.estado == 'I' and inserido == False:
+                            if inserido == False and linha_c.bloco == []:
                                 linha_c.bloco = bloco_memoria_principal
-                                linha_c.estado = 'E'
                                 linha_c.contador = 0
                                 inserido = True
                         if not inserido:
                             maior = max(cache_compartilhada_dados.conjuntos[conjunto_compartilhada], key=lambda l: l.contador)
                             maior.bloco = bloco_memoria_principal
-                            maior.estado = 'E'
                             maior.contador = 0
                         # Insere o bloco na cache privada do processador atual
                         inserido = False
@@ -392,57 +404,49 @@ def FIFO(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dado
             case 3:
                 # Escrita de dados
                 hit = False
-                conjunto_privada = int(endereco, 16) % (NUMERO_LINHAS_CACHE_PRIVADA // NUMERO_LINHAS_CONJUNTO)
                 # Verifica se há um hit na cache privada de dados
                 for linha in cache_privada_dados[processador].conjuntos[conjunto_privada]:
                     if endereco in linha.bloco and linha.estado != 'I':
                         print('Write Hit na cache privada de dados')
                         arq_log.write('Write Hit na cache privada de dados\n\n')
                         hit = True
-                        linha.estado = 'M'
+                        
                         # Invalida o estado das linhas na cache privada de todos os processadores
                         for i in range(NUMERO_PROCESSADORES):
                             for linha_privada in cache_privada_dados[i].conjuntos[conjunto_privada]:
                                 if endereco in linha_privada.bloco:
                                     linha_privada.estado = 'I'
-                        # Invalida o estado das linhas na cache compartilhada
-                        for linha_c in cache_compartilhada_dados.conjuntos[conjunto_privada]:
-                            if endereco in linha_c.bloco:
-                                linha_c.estado = 'I'
+                        linha.estado = 'M'
                         break
                 if not hit:
                     print('Write Miss na cache privada de dados')
                     arq_log.write('Write Miss na cache privada de dados\n\n')
                     print('Buscando na cache compartilhada de dados')
                     arq_log.write('Buscando na cache compartilhada de dados\n\n')
-                    conjunto_compartilhada = int(endereco, 16) % (NUMERO_LINHAS_CACHE_COMPARTILHADA // NUMERO_LINHAS_CONJUNTO)
                     # Verifica se há um hit na cache compartilhada de dados
                     for linha in cache_compartilhada_dados.conjuntos[conjunto_compartilhada]:
-                        if endereco in linha.bloco and linha.estado != 'I':
+                        if endereco in linha.bloco:
                             print('Hit na cache compartilhada de dados')
                             arq_log.write('Hit na cache compartilhada de dados\n\n')
                             hit = True
-                            linha.estado = 'M'
                             # Invalida o estado das linhas na cache privada de todos os processadores
                             for i in range(NUMERO_PROCESSADORES):
                                 for linha_privada in cache_privada_dados[i].conjuntos[conjunto_privada]:
                                     if endereco in linha_privada.bloco:
                                         linha_privada.estado = 'I'
-                            # Invalida o estado das linhas na cache compartilhada
-                            for linha_c in cache_compartilhada_dados.conjuntos[conjunto_privada]:
-                                if endereco in linha_c.bloco:
-                                    linha_c.estado = 'I'
                             # Insere o bloco na cache privada do processador atual
                             inserido = False
                             for linha_p in cache_privada_dados[processador].conjuntos[conjunto_privada]:
                                 if linha_p.estado == 'I' and inserido == False:
                                     linha_p.bloco = linha.bloco
                                     linha_p.estado = 'M'
+                                    linha_p.contador = 0
                                     inserido = True
                             if not inserido:
                                 maior = max(cache_privada_dados[processador].conjuntos[conjunto_privada], key=lambda l: l.contador)
                                 maior.bloco = linha.bloco
                                 maior.estado = 'M'
+                                maior.contador = 0
                             break
                     if not hit:
                         print('Write Miss na cache compartilhada de dados')
@@ -453,28 +457,28 @@ def FIFO(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dado
                         # Insere o bloco na cache compartilhada
                         inserido = False
                         for linha_c in cache_compartilhada_dados.conjuntos[conjunto_compartilhada]:
-                            if linha_c.estado == 'I':
+                            linha_c.contador += 1
+                            if inserido == False and linha_c.bloco == []:
                                 linha_c.bloco = bloco_memoria_principal
-                                linha_c.estado = 'M'
+                                linha_c.contador = 0
                                 inserido = True
-                                break
                         if not inserido:
                             maior = max(cache_compartilhada_dados.conjuntos[conjunto_compartilhada], key=lambda l: l.contador)
                             maior.bloco = bloco_memoria_principal
-                            maior.estado = 'M'
+                            maior.contador = 0
                         # Insere o bloco na cache privada do processador atual
                         inserido = False
                         for linha_p in cache_privada_dados[processador].conjuntos[conjunto_privada]:
                             linha_p.contador += 1
                             if linha_p.estado == 'I' and inserido == False:
                                 linha_p.bloco = bloco_memoria_principal
-                                linha_p.estado = 'E'
+                                linha_p.estado = 'M'
                                 linha_p.contador = 0
                                 inserido = True
                         if not inserido:
                             maior = max(cache_privada_dados[processador].conjuntos[conjunto_privada], key=lambda l: l.contador)
                             maior.bloco = bloco_memoria_principal
-                            maior.estado = 'E'
+                            maior.estado = 'M'
                             maior.contador = 0
         imprimir_caches(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dados, cache_compartilhada_instrucoes, arq_log)
         instrucao_atual = arq_instrucoes.readline()
@@ -488,16 +492,22 @@ def LFU(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dados
             raise ValueError('O id do processador não pode ser maior que o número de processadores.')
         elif operacao not in [0, 2, 3]:
             raise ValueError('O tipo de operação deve ser 0, 2 ou 3.')
-        elif len(endereco) != 8:
+        elif len(endereco) != 10: # 10 caracteres = 4 bytes + 2 caracteres de espaço
             raise ValueError('O endereço deve ter 8 caracteres (4 bytes).')
         
         print(f'Processador: {processador} - Operacao: {operacao} - Endereco: {endereco}')
         arq_log.write(f'Processador: {processador} - Operacao: {operacao} - Endereco: {endereco}\n')
+
+        #   bloco = endereco // N_LINHAS_BLOCO (tamanho da linha)
+        #   conjunto = bloco % N_CONJUNTOS
+        bloco = int(endereco, 16) // TAMANHO_LINHA
+        conjunto_privada = bloco % (NUMERO_LINHAS_CACHE_PRIVADA // NUMERO_LINHAS_CONJUNTO)
+        conjunto_compartilhada = bloco % (NUMERO_LINHAS_CACHE_COMPARTILHADA // NUMERO_LINHAS_CONJUNTO)
+
         match operacao:
             case 0:
                 # Leitura de instrucoes
                 hit = False
-                conjunto_privada = int(endereco, 16) % (NUMERO_LINHAS_CACHE_PRIVADA // NUMERO_LINHAS_CONJUNTO)
                 # Verifica se há um hit na cache privada de instruções
                 for linha in cache_privada_instrucoes[processador].conjuntos[conjunto_privada]: # tentar encontrar o bloco em seu respectivo conjunto
                     if endereco in linha.bloco and linha.estado != 'I':
@@ -509,15 +519,15 @@ def LFU(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dados
                 if not hit:
                     print('Miss na cache privada de instrucoes')
                     arq_log.write('Miss na cache privada de instrucoes\n\n')
-                    conjunto_compartilhada = int(endereco, 16) % (NUMERO_LINHAS_CACHE_COMPARTILHADA // NUMERO_LINHAS_CONJUNTO)
+                    print('Buscando na cache compartilhada de instrucoes')
+                    arq_log.write('Buscando na cache compartilhada de instrucoes\n\n')
                     # Verifica se há um hit na cache compartilhada de instruções
                     for linha in cache_compartilhada_instrucoes.conjuntos[conjunto_compartilhada]:
-                        if endereco in linha.bloco and linha.estado != 'I':
+                        if endereco in linha.bloco:
                             print('Hit na cache compartilhada de instrucoes')
                             arq_log.write('Hit na cache compartilhada de instrucoes\n\n')
                             hit = True
                             linha.contador += 1
-                            linha.estado = 'S' 
                             # Atualiza o estado das linhas na cache privada de todos os processadores
                             for i in range(NUMERO_PROCESSADORES):
                                 for linha_privada in cache_privada_instrucoes[i].conjuntos[conjunto_privada]:
@@ -547,16 +557,14 @@ def LFU(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dados
                         # Insere o bloco na cache compartilhada
                         inserido = False
                         for linha_c in cache_compartilhada_instrucoes.conjuntos[conjunto_compartilhada]:
-                            if linha_c.estado == 'I':
+                            if linha_c.bloco == []:
                                 linha_c.bloco = bloco_memoria_principal
-                                linha_c.estado = 'E'
                                 linha_c.contador = 1
                                 inserido = True
                                 break
                         if not inserido:
                             menor = min(cache_compartilhada_instrucoes.conjuntos[conjunto_compartilhada], key=lambda l: l.contador)
                             menor.bloco = bloco_memoria_principal
-                            menor.estado = 'E'
                             menor.contador = 1
                         # Insere o bloco na cache privada do processador atual
                         inserido = False
@@ -576,7 +584,6 @@ def LFU(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dados
             case 2:
                 # Leitura de dados
                 hit = False
-                conjunto_privada = int(endereco, 16) % (NUMERO_LINHAS_CACHE_PRIVADA // NUMERO_LINHAS_CONJUNTO)
                 # Verifica se há um hit na cache privada de dados
                 for linha in cache_privada_dados[processador].conjuntos[conjunto_privada]:
                     if endereco in linha.bloco and linha.estado != 'I':
@@ -588,15 +595,13 @@ def LFU(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dados
                 if not hit:
                     print('Miss na cache privada de dados')
                     arq_log.write('Miss na cache privada de dados\n\n')
-                    conjunto_compartilhada = int(endereco, 16) % (NUMERO_LINHAS_CACHE_COMPARTILHADA // NUMERO_LINHAS_CONJUNTO)
                     # Verifica se há um hit na cache compartilhada de dados
                     for linha in cache_compartilhada_dados.conjuntos[conjunto_compartilhada]:
-                        if endereco in linha.bloco and linha.estado != 'I':
+                        if endereco in linha.bloco:
                             print('Hit na cache compartilhada de dados')
                             arq_log.write('Hit na cache compartilhada de dados\n\n')
                             hit = True
                             linha.contador += 1
-                            linha.estado = 'S'
                             # Atualiza o estado das linhas na cache privada de todos os processadores
                             for i in range(NUMERO_PROCESSADORES):
                                 for linha_privada in cache_privada_dados[i].conjuntos[conjunto_privada]:
@@ -624,16 +629,14 @@ def LFU(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dados
                         # Insere o bloco na cache compartilhada
                         inserido = False
                         for linha_c in cache_compartilhada_dados.conjuntos[conjunto_compartilhada]: 
-                            if linha_c.estado == 'I':
+                            if linha_c.bloco == []:
                                 linha_c.bloco = bloco_memoria_principal
-                                linha_c.estado = 'E'
                                 linha_c.contador = 1
                                 inserido = True
                                 break
                         if not inserido:
                             menor = min(cache_compartilhada_dados.conjuntos[conjunto_compartilhada], key=lambda l: l.contador)
                             menor.bloco = bloco_memoria_principal
-                            menor.estado = 'E'
                             menor.contador = 1
                         # Insere o bloco na cache privada do processador atual
                         inserido = False
@@ -653,7 +656,6 @@ def LFU(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dados
             case 3:
                 # Escrita de dados
                 hit = False
-                conjunto_privada = int(endereco, 16) % (NUMERO_LINHAS_CACHE_PRIVADA // NUMERO_LINHAS_CONJUNTO)
                 # Verifica se há um hit na cache privada de dados
                 for linha in cache_privada_dados[processador].conjuntos[conjunto_privada]:
                     if endereco in linha.bloco and linha.estado != 'I':
@@ -661,40 +663,28 @@ def LFU(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dados
                         arq_log.write('Hit na cache privada de dados\n\n')
                         hit = True
                         linha.contador += 1
-                        linha.estado = 'M'
                         # Invalida o estado das linhas na cache privada de todos os processadores
                         for i in range(NUMERO_PROCESSADORES):
                             for linha_privada in cache_privada_dados[i].conjuntos[conjunto_privada]:
                                 if endereco in linha_privada.bloco:
                                     linha_privada.estado = 'I'
-                        # Invalida o estado das linhas na cache compartilhada
-                        for linha_c in cache_compartilhada_dados.conjuntos[conjunto_privada]:
-                            if endereco in linha_c.bloco:
-                                linha_c.estado = 'I'
-                        break
+                        linha.estado = 'M'
                 if not hit:
                     print('Miss na cache privada de dados')
                     arq_log.write('Miss na cache privada de dados\n\n')
                     print('Buscando na cache compartilhada de dados')
                     arq_log.write('Buscando na cache compartilhada de dados\n\n')
-                    conjunto_compartilhada = int(endereco, 16) % (NUMERO_LINHAS_CACHE_COMPARTILHADA // NUMERO_LINHAS_CONJUNTO)
                     # Verifica se há um hit na cache compartilhada de dados
                     for linha in cache_compartilhada_dados.conjuntos[conjunto_compartilhada]:
-                        if endereco in linha.bloco and linha.estado != 'I':
+                        if endereco in linha.bloco:
                             print('Hit na cache compartilhada de dados')
                             arq_log.write('Hit na cache compartilhada de dados\n\n')
                             hit = True
-                            linha.contador += 1
-                            linha.estado = 'M'
                             # Invalida o estado das linhas na cache privada de todos os processadores
                             for i in range(NUMERO_PROCESSADORES):
                                 for linha_privada in cache_privada_dados[i].conjuntos[conjunto_privada]:
                                     if endereco in linha_privada.bloco:
                                         linha_privada.estado = 'I'
-                            # Invalida o estado das linhas na cache compartilhada
-                            for linha_c in cache_compartilhada_dados.conjuntos[conjunto_privada]:
-                                if endereco in linha_c.bloco:
-                                    linha_c.estado = 'I'
                             # Insere o bloco na cache privada do processador atual
                             inserido = False
                             for linha_p in cache_privada_dados[processador].conjuntos[conjunto_privada]:
@@ -708,6 +698,7 @@ def LFU(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dados
                                 menor = min(cache_privada_dados[processador].conjuntos[conjunto_privada], key=lambda l: l.contador)
                                 menor.bloco = linha.bloco
                                 menor.estado = 'M'
+                                menor.contador = 1
                             break
                     if not hit:
                         print('Miss na cache compartilhada de dados')
@@ -718,32 +709,33 @@ def LFU(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dados
                         # Insere o bloco na cache compartilhada
                         inserido = False
                         for linha_c in cache_compartilhada_dados.conjuntos[conjunto_compartilhada]:
-                            if linha_c.estado == 'I':
+                            if linha_c.bloco == []:
                                 linha_c.bloco = bloco_memoria_principal
-                                linha_c.estado = 'M'
+                                linha_c.contador = 1
                                 inserido = True
                                 break
                         if not inserido:
                             menor = min(cache_compartilhada_dados.conjuntos[conjunto_compartilhada], key=lambda l: l.contador)
                             menor.bloco = bloco_memoria_principal
-                            menor.estado = 'M'
+                            menor.contador = 1
                         # Insere o bloco na cache privada do processador atual
                         inserido = False
                         for linha_p in cache_privada_dados[processador].conjuntos[conjunto_privada]:
                             if linha_p.estado == 'I':
                                 linha_p.bloco = bloco_memoria_principal
-                                linha_p.estado = 'E'
+                                linha_p.estado = 'M'
                                 linha_p.contador = 1
                                 inserido = True
-                                print(linha_p)
                                 break
                         if not inserido:
                             menor = min(cache_privada_dados[processador].conjuntos[conjunto_privada], key=lambda l: l.contador)
                             menor.bloco = bloco_memoria_principal
-                            menor.estado = 'E'
+                            menor.estado = 'M'
                             menor.contador = 1
         imprimir_caches(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dados, cache_compartilhada_instrucoes, arq_log)
         instrucao_atual = instrucoes.readline()
 
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) != 2:
+        raise ValueError('O programa deve ser executado com o nome do arquivo de instruções.')
+    main(sys.argv[1])
