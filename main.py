@@ -119,17 +119,11 @@ def leitura_arquivo_configuracao():
 def main(nome_arq_instrucoes: str):
     arq_log = open('log.txt', 'w')
     leitura_arquivo_configuracao()
-    print(f'Numero de processadores: {NUMERO_PROCESSADORES}')
     arq_log.write(f'Numero de processadores: {NUMERO_PROCESSADORES}\n')
-    print(f'Tamanho da linha: {TAMANHO_LINHA}')
     arq_log.write(f'Tamanho da linha: {TAMANHO_LINHA}\n')
-    print(f'Numero de linhas da cache compartilhada: {NUMERO_LINHAS_CACHE_COMPARTILHADA}')
     arq_log.write(f'Numero de linhas da cache compartilhada: {NUMERO_LINHAS_CACHE_COMPARTILHADA}\n')
-    print(f'Numero de linhas da cache privada: {NUMERO_LINHAS_CACHE_PRIVADA}')
     arq_log.write(f'Numero de linhas da cache privada: {NUMERO_LINHAS_CACHE_PRIVADA}\n')
-    print(f'Numero de linhas por conjunto: {NUMERO_LINHAS_CONJUNTO}')
     arq_log.write(f'Numero de linhas por conjunto: {NUMERO_LINHAS_CONJUNTO}\n')
-    print(f'Politica de substituição: {POLITICA_SUBSTITUICAO}')
 
     cache_compartilhada_dados = CacheCompartilhada(NUMERO_LINHAS_CACHE_COMPARTILHADA, NUMERO_LINHAS_CONJUNTO)
     cache_compartilhada_instrucoes = CacheCompartilhada(NUMERO_LINHAS_CACHE_COMPARTILHADA, NUMERO_LINHAS_CONJUNTO) 
@@ -466,9 +460,7 @@ def MESI(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dado
                             break
 
                     if not hit:
-                        print('Miss na cache compartilhada de dados')
                         arq_log.write('Miss na cache compartilhada de dados\n\n')
-                        print('Buscando na memoria principal')
                         arq_log.write('Buscando na memoria principal\n\n')
                         bloco_memoria_principal = [hex(int(endereco, 16) - (int(endereco, 16) % TAMANHO_LINHA) + i) for i in range(TAMANHO_LINHA)]
                         
