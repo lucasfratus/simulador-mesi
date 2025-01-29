@@ -3,7 +3,7 @@ import sys
 
 # Lorenzo Henrique Zanetti - RA: 133076
 # Lucas de Oliveira Fratus - RA: 134698
-# Matheus Jacomini Cenerini - RA: 134700
+# Matheus Cenerini Jacomini - RA: 134700
 
 class LinhaCache:
     def __init__(self):
@@ -137,12 +137,12 @@ def main(nome_arq_instrucoes: str):
 
     arq_instrucoes = open(nome_arq_instrucoes, 'r')
 
-    MESI(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dados, cache_compartilhada_instrucoes, arq_instrucoes, arq_log)
+    mesi(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dados, cache_compartilhada_instrucoes, arq_instrucoes, arq_log)
 
     arq_instrucoes.close()
 
 
-def MESI(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dados, cache_compartilhada_instrucoes, instrucoes, arq_log):
+def mesi(cache_privada_dados, cache_privada_instrucoes, cache_compartilhada_dados, cache_compartilhada_instrucoes, instrucoes, arq_log):
     instrucao_atual = instrucoes.readline()
     while instrucao_atual:
         processador, operacao, endereco = separa_instrucao(instrucao_atual)
