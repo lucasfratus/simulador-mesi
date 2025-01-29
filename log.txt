@@ -1,9 +1,9 @@
-Numero de processadores: 2
+Numero de processadores: 4
 Tamanho da linha: 2
 Numero de linhas da cache compartilhada: 16
 Numero de linhas da cache privada: 4
 Numero de linhas por conjunto: 2
-Processador: 0 - Operacao: 2 - Endereco: 0xa8590401
+Processador: 0 - Operacao: 2 - Endereco: 0x18590401
 Read Miss na cache privada de dados
 
 Buscando na cache compartilhada de dados
@@ -17,7 +17,7 @@ Buscando na memoria principal
 Processador 0:
 
 Conjunto 0:
-Est: E - Bloco: ['0xa8590400', '0xa8590401']
+Est: E - Bloco: ['0x18590400', '0x18590401']
 Est: I - Bloco: []
 
 Conjunto 1:
@@ -25,6 +25,26 @@ Est: I - Bloco: []
 Est: I - Bloco: []
 
 Processador 1:
+
+Conjunto 0:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Processador 2:
+
+Conjunto 0:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Processador 3:
 
 Conjunto 0:
 Est: I - Bloco: []
@@ -56,10 +76,30 @@ Conjunto 1:
 Est: I - Bloco: []
 Est: I - Bloco: []
 
+Processador 2:
+
+Conjunto 0:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Processador 3:
+
+Conjunto 0:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
 ~~~~~~~~~~~~~~~~~~ Cache compartilhada de dados ~~~~~~~~~~~~~~~~~~
 
 Conjunto 0:
-Bloco: ['0xa8590400', '0xa8590401']
+Bloco: ['0x18590400', '0x18590401']
 Bloco: []
 
 Conjunto 1:
@@ -126,22 +166,48 @@ Bloco: []
 
 
 --------------------------------------------------------------------------------------------
-Processador: 0 - Operacao: 2 - Endereco: 0xa8590401
-Read Hit na cache privada de dados
+Processador: 0 - Operacao: 2 - Endereco: 0xb0590401
+Read Miss na cache privada de dados
+
+Buscando na cache compartilhada de dados
+
+Miss na cache compartilhada de dados
+
+Buscando na memoria principal
 
 ################## Cache privada de dados ##################
 
 Processador 0:
 
 Conjunto 0:
-Est: E - Bloco: ['0xa8590400', '0xa8590401']
-Est: I - Bloco: []
+Est: E - Bloco: ['0x18590400', '0x18590401']
+Est: E - Bloco: ['0xb0590400', '0xb0590401']
 
 Conjunto 1:
 Est: I - Bloco: []
 Est: I - Bloco: []
 
 Processador 1:
+
+Conjunto 0:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Processador 2:
+
+Conjunto 0:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Processador 3:
 
 Conjunto 0:
 Est: I - Bloco: []
@@ -173,11 +239,31 @@ Conjunto 1:
 Est: I - Bloco: []
 Est: I - Bloco: []
 
+Processador 2:
+
+Conjunto 0:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Processador 3:
+
+Conjunto 0:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
 ~~~~~~~~~~~~~~~~~~ Cache compartilhada de dados ~~~~~~~~~~~~~~~~~~
 
 Conjunto 0:
-Bloco: ['0xa8590400', '0xa8590401']
-Bloco: []
+Bloco: ['0x18590400', '0x18590401']
+Bloco: ['0xb0590400', '0xb0590401']
 
 Conjunto 1:
 Bloco: []
@@ -243,28 +329,46 @@ Bloco: []
 
 
 --------------------------------------------------------------------------------------------
-Processador: 0 - Operacao: 2 - Endereco: 0xa8590404
+Processador: 1 - Operacao: 2 - Endereco: 0x18590401
 Read Miss na cache privada de dados
 
 Buscando na cache compartilhada de dados
 
-Miss na cache compartilhada de dados
-
-Buscando na memoria principal
+Hit na cache compartilhada de dados
 
 ################## Cache privada de dados ##################
 
 Processador 0:
 
 Conjunto 0:
-Est: E - Bloco: ['0xa8590400', '0xa8590401']
-Est: E - Bloco: ['0xa8590404', '0xa8590405']
+Est: S - Bloco: ['0x18590400', '0x18590401']
+Est: S - Bloco: ['0xb0590400', '0xb0590401']
 
 Conjunto 1:
 Est: I - Bloco: []
 Est: I - Bloco: []
 
 Processador 1:
+
+Conjunto 0:
+Est: S - Bloco: ['0x18590400', '0x18590401']
+Est: I - Bloco: []
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Processador 2:
+
+Conjunto 0:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Processador 3:
 
 Conjunto 0:
 Est: I - Bloco: []
@@ -296,10 +400,64 @@ Conjunto 1:
 Est: I - Bloco: []
 Est: I - Bloco: []
 
+Processador 2:
+
+Conjunto 0:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Processador 3:
+
+Conjunto 0:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
 ~~~~~~~~~~~~~~~~~~ Cache compartilhada de dados ~~~~~~~~~~~~~~~~~~
 
 Conjunto 0:
-Bloco: ['0xa8590400', '0xa8590401']
+Bloco: ['0x18590400', '0x18590401']
+Bloco: ['0xb0590400', '0xb0590401']
+
+Conjunto 1:
+Bloco: []
+Bloco: []
+
+Conjunto 2:
+Bloco: []
+Bloco: []
+
+Conjunto 3:
+Bloco: []
+Bloco: []
+
+Conjunto 4:
+Bloco: []
+Bloco: []
+
+Conjunto 5:
+Bloco: []
+Bloco: []
+
+Conjunto 6:
+Bloco: []
+Bloco: []
+
+Conjunto 7:
+Bloco: []
+Bloco: []
+
+~~~~~~~~~~~~~~~~~~ Cache compartilhada de instrucoes ~~~~~~~~~~~~~~~~~~
+
+Conjunto 0:
+Bloco: []
 Bloco: []
 
 Conjunto 1:
@@ -307,7 +465,136 @@ Bloco: []
 Bloco: []
 
 Conjunto 2:
-Bloco: ['0xa8590404', '0xa8590405']
+Bloco: []
+Bloco: []
+
+Conjunto 3:
+Bloco: []
+Bloco: []
+
+Conjunto 4:
+Bloco: []
+Bloco: []
+
+Conjunto 5:
+Bloco: []
+Bloco: []
+
+Conjunto 6:
+Bloco: []
+Bloco: []
+
+Conjunto 7:
+Bloco: []
+Bloco: []
+
+
+--------------------------------------------------------------------------------------------
+Processador: 0 - Operacao: 2 - Endereco: 0x70590401
+Read Miss na cache privada de dados
+
+Buscando na cache compartilhada de dados
+
+Miss na cache compartilhada de dados
+
+Buscando na memoria principal
+
+################## Cache privada de dados ##################
+
+Processador 0:
+
+Conjunto 0:
+Est: E - Bloco: ['0x70590400', '0x70590401']
+Est: S - Bloco: ['0xb0590400', '0xb0590401']
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Processador 1:
+
+Conjunto 0:
+Est: S - Bloco: ['0x18590400', '0x18590401']
+Est: I - Bloco: []
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Processador 2:
+
+Conjunto 0:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Processador 3:
+
+Conjunto 0:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+################## Cache privada de instrucoes ##################
+
+Processador 0:
+
+Conjunto 0:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Processador 1:
+
+Conjunto 0:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Processador 2:
+
+Conjunto 0:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Processador 3:
+
+Conjunto 0:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+~~~~~~~~~~~~~~~~~~ Cache compartilhada de dados ~~~~~~~~~~~~~~~~~~
+
+Conjunto 0:
+Bloco: ['0x70590400', '0x70590401']
+Bloco: ['0xb0590400', '0xb0590401']
+
+Conjunto 1:
+Bloco: []
+Bloco: []
+
+Conjunto 2:
+Bloco: []
 Bloco: []
 
 Conjunto 3:
@@ -380,7 +667,7 @@ Buscando na memoria principal
 Processador 0:
 
 Conjunto 0:
-Est: E - Bloco: ['0xa8590400', '0xa8590401']
+Est: E - Bloco: ['0x70590400', '0x70590401']
 Est: E - Bloco: ['0xa8590398', '0xa8590399']
 
 Conjunto 1:
@@ -388,6 +675,26 @@ Est: I - Bloco: []
 Est: I - Bloco: []
 
 Processador 1:
+
+Conjunto 0:
+Est: S - Bloco: ['0x18590400', '0x18590401']
+Est: I - Bloco: []
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Processador 2:
+
+Conjunto 0:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Processador 3:
 
 Conjunto 0:
 Est: I - Bloco: []
@@ -419,18 +726,38 @@ Conjunto 1:
 Est: I - Bloco: []
 Est: I - Bloco: []
 
+Processador 2:
+
+Conjunto 0:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Processador 3:
+
+Conjunto 0:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
+Conjunto 1:
+Est: I - Bloco: []
+Est: I - Bloco: []
+
 ~~~~~~~~~~~~~~~~~~ Cache compartilhada de dados ~~~~~~~~~~~~~~~~~~
 
 Conjunto 0:
-Bloco: ['0xa8590400', '0xa8590401']
-Bloco: []
+Bloco: ['0x70590400', '0x70590401']
+Bloco: ['0xb0590400', '0xb0590401']
 
 Conjunto 1:
 Bloco: []
 Bloco: []
 
 Conjunto 2:
-Bloco: ['0xa8590404', '0xa8590405']
+Bloco: []
 Bloco: []
 
 Conjunto 3:
