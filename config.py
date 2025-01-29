@@ -1,6 +1,6 @@
 # Description: Arquivo de configuração do simulador MESI
 CONFIGURACOES = {
-    "n_processadores": 2,
+    "n_processadores": 4,
     "tamanho_linha": 2,
     "n_linhas_cache_compartilhada": 16,
     "n_linhas_cache_privada": 4,
